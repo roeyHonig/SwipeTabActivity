@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.linear_main);
         // Create the adapter that will return a fragment for each of the  4 primary sections - pages -  of the activity.
         // This instantiate a new object of class SectionsPagerAdapter, which is an inner class in this activity.
         // inside of that inner class, there will be a call to instantiate a new object of class PlaceholderFragment

@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -41,10 +42,13 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
     private TabLayout tabLayout;
-    private int fabClicksCounter = 1;
+    private int fabClicksCounter = 0;
     private String majorTitleText = "Major Headline of Section: ";
     private String subTitleText = "Sub Headline of Section: ";
 
+    public int getFabClicksCounter() {
+        return fabClicksCounter;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +57,7 @@ public class MainActivity extends AppCompatActivity {
         // reset counter
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         // This instantiate a new object of class SectionsPagerAdapter. in't an inner class in this activity.
@@ -77,27 +80,24 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                  //      .setAction("Action", null).show();
+                toa();
+
+
                 fabClicksCounter++;
-                //mSectionsPagerAdapter.clearAll();
                 mSectionsPagerAdapter.setClicks(fabClicksCounter);
+
+                /*
                 mSectionsPagerAdapter.fragments.get(0).textView.setText("page1 Header "+fabClicksCounter);
                 mSectionsPagerAdapter.fragments.get(0).textView2.setText("page 1 title "+fabClicksCounter);
                 mSectionsPagerAdapter.fragments.get(1).textView.setText("page 2 Header "+fabClicksCounter);
                 mSectionsPagerAdapter.fragments.get(1).textView2.setText("page 2 title "+fabClicksCounter);
 
-
-              //  mSectionsPagerAdapter.getItem(1);
-               // mSectionsPagerAdapter.getItem(2);
-              //  mSectionsPagerAdapter.getItem(3);
-
-
-                //mViewPager.removeAllViews();
-                //mViewPager.setAdapter(null);
-                //mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), fabClicksCounter);
-               // mViewPager.setAdapter(mSectionsPagerAdapter);
-                //mViewPager.setCurrentItem(3);
+                */
+                for (int i = 0; i < mSectionsPagerAdapter.fragments.size(); i++) {
+                    mSectionsPagerAdapter.fragments.get(i).textView.setText("roey: " + (i+1)+ " after " + fabClicksCounter + " Clicks");
+                    mSectionsPagerAdapter.fragments.get(i).textView2.setText("roey: " + (i+1)+ " after " + fabClicksCounter + " Clicks");
+                    mSectionsPagerAdapter.fragments.get(i).setClicksOnFab(fabClicksCounter);
+                }
 
 
             }
@@ -105,28 +105,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+    private void toa() {
+        Toast.makeText(this,""+mSectionsPagerAdapter.fragments.size(), Toast.LENGTH_LONG).show();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     /**
      * A placeholder fragment containing a simple view.
@@ -141,6 +123,19 @@ public class MainActivity extends AppCompatActivity {
         private int roey;
         private TextView textView;
         private TextView textView2;
+        private int clicksOnFab = 0;
+
+        public void setClicksOnFab(int clicksOnFab) {
+            this.clicksOnFab = clicksOnFab;
+        }
+
+        public TextView getTextView() {
+            return textView;
+        }
+
+        public TextView getTextView2() {
+            return textView2;
+        }
 
         public PlaceholderFragment() {
         }
@@ -155,8 +150,10 @@ public class MainActivity extends AppCompatActivity {
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             args.putInt(ARG_FAB_CLICKS, clicks);
             fragment.setArguments(args);
+            fragment.clicksOnFab = clicks;
             return fragment;
         }
+
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -170,14 +167,25 @@ public class MainActivity extends AppCompatActivity {
             textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             switch (getArguments().getInt(ARG_SECTION_NUMBER)){
                 case 1:
+
                     textView.setVisibility(View.INVISIBLE);
                     textView2.setVisibility(View.VISIBLE);
-                    textView2.setText("Sub Headline of Section: " + getArguments().getInt(ARG_SECTION_NUMBER)+ " after " + numOfClicks + " Clicks");
+                    textView2.setText("roey: " + getArguments().getInt(ARG_SECTION_NUMBER)+ " after " + this.clicksOnFab + " Clicks");
                     break;
                 case 2:
                     textView2.setVisibility(View.INVISIBLE);
                     textView.setVisibility(View.VISIBLE);
-                    textView.setText("Major Headline of Section: " + getArguments().getInt(ARG_SECTION_NUMBER)+ " after " + numOfClicks + " Clicks");
+                    textView.setText("roey: " + getArguments().getInt(ARG_SECTION_NUMBER)+ " after " + this.clicksOnFab + " Clicks");
+                    break;
+                case 3:
+                    textView.setVisibility(View.INVISIBLE);
+                    textView2.setVisibility(View.VISIBLE);
+                    textView2.setText("roey: " + getArguments().getInt(ARG_SECTION_NUMBER)+ " after " + this.clicksOnFab + " Clicks");
+                    break;
+                case 4:
+                    textView2.setVisibility(View.INVISIBLE);
+                    textView.setVisibility(View.VISIBLE);
+                    textView.setText("roey: " + getArguments().getInt(ARG_SECTION_NUMBER)+ " after " + this.clicksOnFab + " Clicks");
                     break;
                 default:
                     textView.setVisibility(View.INVISIBLE);
@@ -219,18 +227,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 4 total pages.
             return 4;
         }
 
-        public void clearAll() //Clear all page
-        {
-            for(int i=0; i < fragments.size(); i++)
-            {
-                fm.beginTransaction().remove(fragments.get(i)).commit();
-            }
-            fragments.clear();
-        }
+
 
 
 

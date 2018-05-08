@@ -42,33 +42,22 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
     private TabLayout tabLayout;
-    private int fabClicksCounter = 0;
-    private String majorTitleText = "Major Headline of Section: ";
-    private String subTitleText = "Sub Headline of Section: ";
-
-    public int getFabClicksCounter() {
-        return fabClicksCounter;
-    }
+    private int fabClicksCounter = 0; // in this example, clicking the FAB changes the data of the pages (sections)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // reset counter
-
-
-
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        // This instantiate a new object of class SectionsPagerAdapter. in't an inner class in this activity.
+        // Create the adapter that will return a fragment for each of the  4 primary sections - pages -  of the activity.
+        // This instantiate a new object of class SectionsPagerAdapter, which is an inner class in this activity.
         // inside of that inner class, there will be a call to instantiate a new object of class PlaceholderFragment
         // which is another inner class in this activity.
         // The PlaceholderFragment object is responsiable to the content of the page section
         // how does he knows the page section, he get's it as an argument from the SectionsPagerAdapter
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), fabClicksCounter);
 
-        // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
+        // Set up the ViewPager with the sections adapter.
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -80,22 +69,13 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                toa();
-
-
                 fabClicksCounter++;
                 mSectionsPagerAdapter.setClicks(fabClicksCounter);
-
-                /*
-                mSectionsPagerAdapter.fragments.get(0).textView.setText("page1 Header "+fabClicksCounter);
-                mSectionsPagerAdapter.fragments.get(0).textView2.setText("page 1 title "+fabClicksCounter);
-                mSectionsPagerAdapter.fragments.get(1).textView.setText("page 2 Header "+fabClicksCounter);
-                mSectionsPagerAdapter.fragments.get(1).textView2.setText("page 2 title "+fabClicksCounter);
-
-                */
                 for (int i = 0; i < mSectionsPagerAdapter.fragments.size(); i++) {
-                    mSectionsPagerAdapter.fragments.get(i).textView.setText("roey: " + (i+1)+ " after " + fabClicksCounter + " Clicks");
-                    mSectionsPagerAdapter.fragments.get(i).textView2.setText("roey: " + (i+1)+ " after " + fabClicksCounter + " Clicks");
+                    // directlly change the page we're viewing (and also all the others, but we don't see the others)
+                    mSectionsPagerAdapter.fragments.get(i).textView.setText("Page: " + (i+1)+ " after " + fabClicksCounter + " Clicks");
+                    mSectionsPagerAdapter.fragments.get(i).textView2.setText("Page: " + (i+1)+ " after " + fabClicksCounter + " Clicks");
+                    // change a field in the fragments (pages), so when onCreateView is called (while we scroll them back into view) they will indeed reflect the changes
                     mSectionsPagerAdapter.fragments.get(i).setClicksOnFab(fabClicksCounter);
                 }
 
@@ -104,11 +84,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
-    private void toa() {
-        Toast.makeText(this,""+mSectionsPagerAdapter.fragments.size(), Toast.LENGTH_LONG).show();
-    }
-
 
     /**
      * A placeholder fragment containing a simple view.
@@ -120,21 +95,12 @@ public class MainActivity extends AppCompatActivity {
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
         private static final String ARG_FAB_CLICKS = "fab_clicks";
-        private int roey;
         private TextView textView;
         private TextView textView2;
         private int clicksOnFab = 0;
 
         public void setClicksOnFab(int clicksOnFab) {
             this.clicksOnFab = clicksOnFab;
-        }
-
-        public TextView getTextView() {
-            return textView;
-        }
-
-        public TextView getTextView2() {
-            return textView2;
         }
 
         public PlaceholderFragment() {
@@ -148,13 +114,16 @@ public class MainActivity extends AppCompatActivity {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            args.putInt(ARG_FAB_CLICKS, clicks);
             fragment.setArguments(args);
             fragment.clicksOnFab = clicks;
             return fragment;
         }
 
-
+        // since we're using an extenstion of FragmentPagerAdapter, the fragments -representing the pages - are created once and never destroyed.
+        // but still when the user scroll them out of the screen, thier views are gone
+        // we have to recreate thier respected view every time the user rescroll back to them
+        // that is when onCreateView is called
+        // so we have to make sure that this methood allaways holds the mose current set of data we want to load
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -162,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
             textView = (TextView) rootView.findViewById(R.id.section_label);
             textView2 = (TextView) rootView.findViewById(R.id.sub_section_label);
 
-            int numOfClicks = getArguments().getInt(ARG_FAB_CLICKS);
 
             textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             switch (getArguments().getInt(ARG_SECTION_NUMBER)){
@@ -170,22 +138,22 @@ public class MainActivity extends AppCompatActivity {
 
                     textView.setVisibility(View.INVISIBLE);
                     textView2.setVisibility(View.VISIBLE);
-                    textView2.setText("roey: " + getArguments().getInt(ARG_SECTION_NUMBER)+ " after " + this.clicksOnFab + " Clicks");
+                    textView2.setText("Page: " + getArguments().getInt(ARG_SECTION_NUMBER)+ " after " + this.clicksOnFab + " Clicks");
                     break;
                 case 2:
                     textView2.setVisibility(View.INVISIBLE);
                     textView.setVisibility(View.VISIBLE);
-                    textView.setText("roey: " + getArguments().getInt(ARG_SECTION_NUMBER)+ " after " + this.clicksOnFab + " Clicks");
+                    textView.setText("Page: " + getArguments().getInt(ARG_SECTION_NUMBER)+ " after " + this.clicksOnFab + " Clicks");
                     break;
                 case 3:
                     textView.setVisibility(View.INVISIBLE);
                     textView2.setVisibility(View.VISIBLE);
-                    textView2.setText("roey: " + getArguments().getInt(ARG_SECTION_NUMBER)+ " after " + this.clicksOnFab + " Clicks");
+                    textView2.setText("Page: " + getArguments().getInt(ARG_SECTION_NUMBER)+ " after " + this.clicksOnFab + " Clicks");
                     break;
                 case 4:
                     textView2.setVisibility(View.INVISIBLE);
                     textView.setVisibility(View.VISIBLE);
-                    textView.setText("roey: " + getArguments().getInt(ARG_SECTION_NUMBER)+ " after " + this.clicksOnFab + " Clicks");
+                    textView.setText("Page: " + getArguments().getInt(ARG_SECTION_NUMBER)+ " after " + this.clicksOnFab + " Clicks");
                     break;
                 default:
                     textView.setVisibility(View.INVISIBLE);
@@ -218,9 +186,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
+            //getItem() is called by the instantiateItem() internally in order to create a new fragment for a given page.
+            // Return a PlaceholderFragment (defined as a static inner class abouve).
             PlaceholderFragment temp = PlaceholderFragment.newInstance(position + 1, clicks);
+            // by keeping a ref to the fragment created, we would have an option- whenever we want- to update the fragments (pages) of the adapter
             fragments.add(temp);
             return temp;
         }
